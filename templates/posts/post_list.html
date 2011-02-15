@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block header %}
+    <link rel="stylesheet" type="text/css" media="all" href="media/css/post.css" />
+{% endblock %}
+
+{% block content %}
+<div id="blog_left">
+{% for object in post_list %}
+	{% include 'posts/_post.html' %}
+	<a href="/blog/{{ object.slug }}">Comments, etc.</a>
+  <hr/>
+{% endfor %}
+</div>
+<div id="blog_right">
+  {% include 'posts/_post_sidebar.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "shop/base.html" %}
+{% load i18n %}
+{% load thumbnail %}
+{% load satchmo_price %}
+{% load satchmo_currency satchmo_category %}
+{% load satchmo_util satchmo_discounts %}
+{% load app_plugins %}
+
+{% block extra-head %}
+
+<script src="/media/js/cufon-yui.js" type="text/javascript"></script>
+		<script src="/media/js/ChocolateBox_400.font.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			Cufon.replace('h2'); // Works without a selector engine
+		</script>
+
+{% endblock %}
+
+{% block title %}- {{ category.name }}{% endblock %}
+
+{% block navbar %}
+    <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+	{% for parent in category.parents %}<li><a href="{{ parent.get_absolute_url }}">{{ parent.translated_name }}</a></li>{% endfor %}
+	<li>{{ category.translated_name }}</li>
+{% endblock %}
+
+{% block content %}
+<div id="category_left">
+    {% if category.main_image %}
+           <img class="cat_img" src="/media/{{ category.main_image.picture }}" />
+    {% endif %}
+</div>
+
+<div id="category_right">
+  
+  <p class="product_category_description">{{ category.translated_description }}</p>
+    {% for product in products %} 
+        {% if forloop.first %} <ul>  {% endif %}
+            
+            <li class="{% cycle 'cat_left' 'cat_right' %}">
+            {% if product.slug == "coco-nectar-300g" %}
+              {% thumbnail product.main_image.picture 150x150 as image %}
+            {% else %}
+              {% thumbnail product.main_image.picture 220x220 as image %}
+            {% endif %}
+            <div class="cat_item_image">
+              <a class="product_small_image" href="{{ product.get_absolute_url }}"><img src="{{ image }}" width="{{ image.width }}" height="{{ image.height }}" /></a>
+            </div>
+            <div class="cat_item_text">
+              <div class="product_name"><a href="{{ product.get_absolute_url }}">{{ product.productattribute_set.all.0.value }}</a><br />
+              <p>{{ product|discount_price:""|currency }}</p>
+              </div>
+              <p>{{ product.short_description }}</p>
+              <a href="{{ product.get_absolute_url }}"><div class="cat_item_button"><div>VIEW</div></div></a>
+            </div>
+            </li>
+            {% cycle '' '<div class="clear"></div>' %}
+        {% if forloop.last %} </ul> {% endif %}
+    {% endfor %}
+{% if child_categories %}
+        {% for cat in child_categories %}
+            <h4>{{cat.translated_name}}</h4>
+            {% if cat.translated_description %}<p class="product_category_description">{{ cat.translated_description }}</p>{% endif %}
+            {% for product in cat.active_products %}
+                {% if forloop.first %} <ul>  {% endif %}
+                    <li>{% thumbnail product.main_image.picture 85x85 as image %}
+                    <a href="{{ product.get_absolute_url }}"><img src="{{ image }}" width="{{ image.width }}" height="{{ image.height }}" /></a>
+                <a href="{{ product.get_absolute_url }}">{{ product.translated_name }}</a></li>
+                {% if forloop.last %} </ul> {% endif %}
+            {% endfor %}
+        {% endfor %}
+{% endif %}
+{% if sale %}
+{% include "product/some_discount_eligible.html" %}
+{% endif %}
+</div>
+
+{% endblock %}
+
+{% block end-body %} 
+  <script type="text/javascript"> Cufon.now(); </script>
+{% endblock %}

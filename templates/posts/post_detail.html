@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+    <link rel="stylesheet" type="text/css" media="all" href="media/css/post.css" />
+{% endblock %}
+{% block content %}
+
+<div id="blog_left">
+{% include 'posts/_post.html' %}
+<br /><br />
+{% include 'posts/disqus.html' %}
+</div>
+<div id="blog_right">
+  {% include 'posts/_post_sidebar.html' %}
+</div>
+{% endblock %}

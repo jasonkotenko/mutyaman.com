@@ -1,0 +1,78 @@
+{% extends "shop/base.html" %}
+{% load i18n %}
+{% load satchmo_cart %}
+{% load satchmo_currency %}
+{% load satchmo_util %}
+{% load satchmo_product %}
+{% load satchmo_discounts %}
+{% load normalize_decimal %}
+{% load localsite_tags %}
+{% load thumbnail %}
+
+{% block navbar %}
+    <li class="first"><a href="{{shop_base}}/">{% trans "Home" %}</a></li>
+    <li>{% trans "Cart" %}</li>
+{% endblock %}
+
+{% block content %}
+
+<div id="cart_div">
+{% if error_message %}
+<div class="error">{{ error_message }}</div>
+{% endif %}
+{% if not cart|length %}
+    <h4>{% trans "Your cart is empty." %}</h4>
+{% else %}
+    <h4>{% trans "Your Cart" %}</h4>
+    <table id="cart_table"><tr id="cart_header">
+    <th id="qty_col">{% trans "Quantity" %}</th>
+    <th id="item_col">{% trans "Item" %}</th>
+    {% if sale %}
+		<th>{% trans "Regular Price" %}</th>
+		<th>{% trans "Sale Price" %}
+	{% else %}
+		<th id="price_col">{% trans "Unit Price" %}</th>
+	{% endif %}
+    <th id="total_col" align="center">{% if default_view_tax %}{% trans "Total<br/>(incl.&nbsp;tax)" %}{% else %}{% trans "Total" %}{% endif %}</th>
+    </tr>
+
+    {% for cartitem in cart %}
+        <tr class="cart_line">
+            <td align="center">
+                <form class="qtyform" id="form-{{ cartitem.id }}" action="{% url satchmo_cart_set_qty %}" method="post">{% csrf_token %}
+                    <input type="hidden" name="cartitem" value="{{ cartitem.id }}" />
+					<input type="text" name="quantity" id="id_quantity" value="{{ cartitem.quantity|normalize_decimal }}" />
+                    <input type="submit" id="id_update_submit" value="{% trans 'update amount' %}" />
+                </form>
+            </td>
+            <td>
+            <div class="cart_tn">         
+{% thumbnail cartitem.product.main_image.picture 85x85 as image %}<img src="{{ image }}" width="{{ image.width }}" height="{{ image.height }}" /></div>
+            <div class="cart_ii">
+              <a href="{{cartitem.product.get_absolute_url}}">{{ cartitem.description }}</a>
+              <form class="cart_remove" action="{% url satchmo_cart_remove %}" method="post">{% csrf_token %}
+                <input type="hidden" name="cartitem" value="{{ cartitem.id }}" />
+                <input type="submit" value="{% trans 'Remove' %}" />
+            </form>
+            </div>
+            </td>
+			{% if sale %}<td align="center">{{ cartitem.product|discount_price:sale|currency }}</td>{% endif %}
+            <td align="center">{{ cartitem.product|qty_price:cartitem.quantity|currency }}</td>
+			
+            <td align="center"><strong>{{ cartitem|discount_line_total:sale|currency }}</strong></td>
+        </tr>
+		{% cartitem_custom_details cartitem %}
+		{% cartitem_subscription_details cartitem %}
+    {% endfor %}
+    <tr id="cart_total_row"><td colspan="{% if sale %}4{% else %}3{% endif %}" align="right">{% trans "Cart Total" %}:</td>
+        <td id="cart_total">{{ cart|discount_cart_total:sale|currency }}</td></tr>
+    </table>
+    {% if sale %}
+	{% include "product/some_discount_eligible.html" %}
+	{% endif %}
+
+   <div id="checkout_cont"><div id="checkout"><a href="{% url satchmo_checkout-step1 %}"><img src="/media/images/checkout.png"></a></div></div>
+{% endif %}
+
+</div>
+{% endblock %}

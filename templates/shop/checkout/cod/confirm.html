@@ -1,0 +1,26 @@
+{% extends "shop/checkout/base_confirm.html" %}
+{% load i18n %}
+{% load satchmo_currency %}
+{# this is the credit-card confirm template #}
+
+{% block errorheader %}{% trans "The following error was returned while trying to process your card.  Please correct and resubmit" %}{% endblock %}
+
+{% block navbar %}
+   <li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+   <li>{% trans "Checkout" %}</li>
+{% endblock %}
+
+{% block payment_display %}
+<h4>{% trans "Payment" %}</h4>
+
+{% with order.total|currency as order_total %}
+{% blocktrans %}This order will be Bank Transfer OR GCash Transfer for {{ order_total }}.{% endblocktrans %}<br /><br />
+<div id="payment_info">
+<strong>PAYMENT OPTIONS:</strong>
+<p><strong>Bank Transfer:</strong> Within 7 days, proceed to transfer the full amount due to the specified Banco De Oro (BDO) bank account.  We will provide the account number to you on your confirmation screen and via email.</p>
+<p><strong>GCash:</strong> Use Globe's GCash functionality to transfer the required amount to the specified cell phone number.  We will provide the account number to you on your confirmation screen and via email.</p>
+<p>Special Arrangements may be made upon request once your order has been confirmed.</p>
+<p><strong>Order Forfeiture:</strong> If your payment is not made within 7 days, your order will be automatically cancelled.</p>
+</div>
+{% endwith %}
+{% endblock %}

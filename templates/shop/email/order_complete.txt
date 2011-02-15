@@ -1,0 +1,36 @@
+{% load i18n satchmo_currency satchmo_order %}
+
+{% block salutation %}{% with order.contact.first_name as first_name %}{% with order.contact.last_name as last_name %}{% blocktrans %}Dear {{ first_name }} {{ last_name }},{% endblocktrans %}{% endwith %}{% endwith %}{% endblock %}
+
+{% blocktrans %}Thank you for ordering with {{ shop_name }}.{% endblocktrans %}
+
+{% trans "Your order is summarized below:" %}
+
+{% block order_details %}{% include "shop/email/_order_detail.txt" %}{% endblock order_details %}{% comment %}
+    Whitespace for readibility. Hidden, so that we only have two newlines before
+    the next block.
+{% endcomment %}
+{% block order_details_payment %}{% trans "Payment" %}
+-------
+Method(s): {{ order|order_payment_methods|join:", " }}{% with order.credit_card.credit_type as credit_card_type %}{% with order.credit_card.display_cc as credit_card_number %}{% with order.total|currency as order_total %}
+{% block order_details_payment_body %}{% blocktrans %}Your {{ credit_card_type }} card ending in {{ credit_card_number }} will be charged {{ order_total }}.{% endblocktrans %}{% endblock order_details_payment_body %}{% endwith %}{% endwith %}{% endwith %}
+
+-------
+Payment Options:
+Bank Transfer: For customers selecting Bank Transfer, use the following details: Banco De Oro (BDO) Account# 7220000984 Frances Kristin Jamille P Regis
+GCash: For customers with Globe GCash accounts, please transfer the full amount to 09176237784.
+IMPORTANT: You must confirm your payment to us.  Either send a text to 09176237784 or an email to payment@mutyaman.com with your name, your order number (at the top of the page), and the amount. This step is required to complete your order and for us to begin shipping.
+Reminder: If payment is not received within 7 days, your order will be automatically cancelled.  If you have paid and just failed to confirm, we will make every effort to attempt to contact you.
+{% endblock order_details_payment %}
+
+{% if order.has_downloads %}
+{% trans "Your order contains products that can be downloaded" %}
+{% trans "Please click the link to begin the download" %}
+{% for download in order.downloadlink_set.all %}
+{{ download.product_name }}: {{download.get_full_url}}
+{% endfor %}
+{% endif %}
+
+{% block valediction %}{% trans "Regards" %},
+
+{% trans "Store Management" %}{% endblock%}

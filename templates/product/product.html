@@ -1,0 +1,102 @@
+{% extends "shop/base.html" %}
+{% comment %}
+-------------------------------------------------------------------
+This is the base product detail page.
+To modify the templates of specific types of products, such as
+ProductVariations or CustomProducts, look for product/detail_xxx.html
+-------------------------------------------------------------------
+{% endcomment %}
+{% load i18n %}
+{% load thumbnail %}
+{% load satchmo_price %}
+{% load satchmo_currency satchmo_category %}
+{% load satchmo_util satchmo_discounts %}
+{% load app_plugins %}
+
+{% block extra-head %}
+<script src="/media/js/cufon-yui.js" type="text/javascript"></script>
+		<script src="/media/js/ChocolateBox_400.font.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			Cufon.replace('h2'); // Works without a selector engine
+		</script>
+
+{% endblock %}
+
+{% block title %}
+- {{ product.name }}
+{% endblock %}
+
+{% block navbar %}
+<li class="first"><a href="{{ shop_base }}/">{% trans "Home" %}</a></li>
+{% for name, url in product.category.all.0.get_url_name %}
+    <li><a href="{{ url }}">{{ name }}</a></li>
+{% endfor %}
+<li>{{ product.translated_name }}</li>
+{% endblock %}
+
+{% block content %}
+{% block productdetail %}
+
+<div id="product_buy">
+<div id="product_image">
+<h4>{{ product.translated_name }}</h4>
+
+<h3>
+	{% if sale %}<strike id="fullprice" style="display: block;">{{ product|discount_price:""|currency }}</strike>{% endif %}
+	<span id="price">{{ product|discount_price:sale|currency }}</span>
+</h3>
+{% for pic in product.productimage_set.all %}
+    {% thumbnail pic.picture 280x280 as image %}
+    <img id="prod_img" src="{{ image }}" width="{{ image.width }}" height="{{ image.height }}" />
+{% endfor %}
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+</div>
+
+<form id="options" action="{% url satchmo_smart_add %}" method="post">{% csrf_token %}
+{% trans "Quantity" %} <input type="text" size="5" name="quantity" id="quantity" value="1" class="priced" />
+<input type="hidden" name="productname" id="productname" value="{{product.slug}}" />
+<input id="add_to_cart" type="submit" name="addcart" value="{% trans "Add to cart" %}" />
+{% plugin_point "product_add_buttons" %}
+{% plugin_point "product_form" %}
+</form>
+
+<div id="product_volume">
+<h4>Volume Discounts:</h4>
+<table border="1" bgcolor="#FFFFFF">
+<tr>
+  <th>Quantity</th>
+  <th>Unit Price</th>
+</tr>
+{% for volume_tuple in product.get_qty_price_list reversed %}
+<tr>
+<td>At least {{ volume_tuple.0 }}</td><td>{{ volume_tuple.1 }}PHP</td>
+</tr>
+{% endfor %}
+</table>
+<p>Note that shipping also becomes less expensive the larger your order.  Proceed to checkout to see your shipping costs (which vary based on your location and the weight of your complete order).</p>
+<p>You may also pick up your order, free of charge, in Pasig City or Paranaque City by arrangement.</p>
+</div>
+
+</div>
+<div id="product_info">
+<p id="prod_descr">{{ product.translated_description }}</p>
+<hr />
+<div id="cat_descr">
+<p>About <strong>{{ product.category.all.0.translated_name }}</strong>:</p>
+<p>{{ product.category.all.0.translated_description }}</p>
+<hr />
+{{ product.category.all.0.meta|safe }}
+</div>
+</div>
+{% endblock %}
+
+{% block productfooter %}
+{% if sale %}{% include "product/product_discount_eligible.html" %}{% endif %}
+{% plugin_point "product_footer" %}
+{% endblock %}
+{% endblock %}
+
+{% block end-body %} 
+  <script type="text/javascript"> Cufon.now(); </script>
+{% endblock %}

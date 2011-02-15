@@ -1,0 +1,15 @@
+{% extends "shop/base.html" %}
+
+{% block extra-head %}
+<script src="/media/js/cufon-yui.js" type="text/javascript"></script>
+		<script src="/media/js/ChocolateBox_400.font.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			Cufon.replace('h2'); // Works without a selector engine
+		</script>
+{% endblock %}
+
+{% block title %}- {{ flatpage.title }}{% endblock %}
+
+{% block content %}
+{{ flatpage.content }}
+{% endblock %}

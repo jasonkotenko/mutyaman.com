@@ -1,0 +1,11 @@
+{% load i18n %}
+{% load satchmo_currency %}
+{% if default_view_tax %}{% load satchmo_tax %}{% endif %}
+{% if default_view_tax %}{{ taxed_shipping_price }} {{ shipping_tax }}{% else %}{{amount|currency}}{% endif %} : {{ description }}
+<br>
+{% if method == "Customer Pick-Up at Outlet" %}
+  Pick-Up at our location in Pasig City (Barangay Kapitolyo) or, inside Ayala Alabang (only for Ayala Alabang residents due to security restrictions).
+{% else %}
+{% blocktrans %}Sent via {{ method }} arrives approximately {{ expected_delivery }}.{% endblocktrans %}
+{% endif %}
+<hr>
