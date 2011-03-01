@@ -11,19 +11,22 @@ admin.autodiscover()
 urlpatterns = []
 
 urlpatterns += patterns('',
+    (r'^blog/$', 'posts.views.latest'),
+    (r'^blog/(?P<req_name>.*)/$', 'posts.views.post'),
+    (r'^away/$', 'django.views.generic.simple.direct_to_template', {'template':'away.html'}),
+    (r'^cart/$', 'django.views.generic.simple.direct_to_template', {'template':'away.html'}),
     (r'^$',redirect_to, {'url': '/category/coco-nectar'}, 'satchmo_shop_home'),
     (r'^googlehostedservice.html$', 'django.views.generic.simple.direct_to_template', {'template':'googlehostedservice.html'}),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
     (r'^robots.txt$', 'django.views.generic.simple.direct_to_template', {'template':'robots.txt'}),
-    (r'^blog/$', 'posts.views.latest'),
-    (r'^blog/(?P<req_name>.*)/$', 'posts.views.post'),
+
     #(r'^$','satchmo_store.shop.views.home.home', {}, 'satchmo_shop_home'),
     #(r'^admin/(.*)', include(admin.site.urls)), 
 )
 
 urlpatterns += patterns('satchmo_store.shop.views',    
     (r'^add/$', 'smart.smart_add', {}, 'satchmo_smart_add'),
-    (r'^cart/$', 'cart.display', {}, 'satchmo_cart'),
+    #(r'^cart/$', 'cart.display', {}, 'satchmo_cart'),
     (r'^cart/accept/$', 'cart.agree_terms', {}, 'satchmo_cart_accept_terms'),
     (r'^cart/add/$', 'cart.add', {}, 'satchmo_cart_add'),
     (r'^cart/add/ajax/$', 'cart.add_ajax', {}, 'satchmo_cart_add_ajax'),
