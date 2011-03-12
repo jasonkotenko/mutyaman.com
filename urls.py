@@ -11,8 +11,8 @@ admin.autodiscover()
 urlpatterns = []
 
 urlpatterns += patterns('',
-    (r'^blog/$', 'posts.views.latest'),
-    (r'^blog/(?P<req_name>.*)/$', 'posts.views.post'),
+    (r'^blog/$', 'store.posts.views.latest'),
+    (r'^blog/(?P<req_name>.*)/$', 'store.posts.views.post'),
     (r'^away/$', 'django.views.generic.simple.direct_to_template', {'template':'away.html'}),
     (r'^cart/$', 'django.views.generic.simple.direct_to_template', {'template':'away.html'}),
     (r'^$',redirect_to, {'url': '/category/coco-nectar'}, 'satchmo_shop_home'),
